@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
         <title>FIND_MY_DOG</title>
-        <link href="./css/styles.css" rel="stylesheet" type="text/css" />
+        <link href="./styles.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
         <header>
@@ -17,11 +17,32 @@
             </nav>
         </header>
         <h1>Find my dog</h1>
+        <button onclick="window.location.href = '../found_dog_tab/index.html';"> I found a dog </button>
+        <button onclick="window.location.href = '../lost_dog_tab/index.html';"> I lost a dog </button>
+        <div class = "Lost_dog_section">
+            <ul id = "Particular_dog_info_list">
 
+            </ul>
+        </div>
+        <div class = "Found_dogs_section">
+            <ul id = "Particular_dog_info_list">
+
+            </ul>
+        </div>
+        <div class = "Mydogs_section">
+            <ul id = "Particular_dog_info_list">
+
+            </ul>
+        </div>
+        <div class = "Seen_dog_section">
+            <ul id = "Particular_dog_info_list">
+
+            </ul>
+        </div>
         <script
             src="https://code.jquery.com/jquery-3.4.1.js"
             integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
             crossorigin="anonymous"></script>
-        <script src="./js/script.js"></script>
+        <script src="./script.js"></script>
     </body>
 </html>
