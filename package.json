@@ -1,0 +1,23 @@
+{
+  "name": "find_my_dog",
+  "version": "1.0.0",
+  "description": "Web application to post lost/found dogs",
+  "main": "server-blog-javier.js",
+  "scripts": {
+    "start": "node server/server-blog-javier.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javierescamilla/Find-my-dog.git"
+  },
+  "author": "Javier Escamilla J.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/javierescamilla/Find-my-dog/issues"
+  },
+  "homepage": "https://github.com/javierescamilla/Find-my-dog#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.7.11"
+  }
+}
