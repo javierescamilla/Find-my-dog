@@ -1,5 +1,6 @@
+console.log("Entrando scripts")
 function showFoundDogs(){
-
+    console.log("Entrando showFoundDogs")
 	fetch('/blog-posts')
 		.then( response => {
 

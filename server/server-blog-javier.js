@@ -1,5 +1,6 @@
 let express = require ('express');
 let mongoose = require('mongoose');
+let morgan = require ('morgan');
 
 let app = express();
 let bodyParser = require( "body-parser" );
@@ -10,6 +11,7 @@ let {DATABASE_URL, PORT} = require('./config');
 mongoose.Promise = global.Promise;
 
 app.use(express.static('public'));
+app.use( morgan( 'dev' ) );
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
