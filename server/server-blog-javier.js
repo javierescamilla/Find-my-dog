@@ -1,82 +1,160 @@
-// let express = require ('express');
-// let mongoose = require('mongoose');
-// let morgan = require ('morgan');
+let express = require ('express');
+let morgan = require ('morgan');
+let mongoose = require('mongoose');
 
-// let app = express();
-// let bodyParser = require( "body-parser" );
-// let jsonParser = bodyParser.json();
+let app = express();
+let bodyParser = require( "body-parser" );
+let jsonParser = bodyParser.json();
 
-// let {BlogList} = require('./blog-post-model');
-// let {DATABASE_URL, PORT} = require('./config');
-// mongoose.Promise = global.Promise;
+let {BlogList} = require('./blog-post-model');
+let {DATABASE_URL, PORT} = require('./config');
+mongoose.Promise = global.Promise;
 
-// app.use(express.static('public'));
-// app.use( morgan( 'dev' ) );
+app.use(express.static('public'));
+app.use( morgan( 'dev' ) );
 
-// app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     next();
-// });
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
-// app.get( '/blog-posts', ( req, res, next ) => {
-//     console.log("Enter get")
-//     BlogList.get()
-//     console.log(BlogList.get())
-// 		.then( blogs => {
-// 			return res.status( 200 ).json( blogs );
-// 		})
-// 		.catch( error => {
-// 			res.statusMessage = "Something went wrong with the DB. Try again later.";
-// 			return res.status( 500 ).json({
-// 				status : 500,
-// 				message : "Something went wrong with the DB. Try again later."
-// 			})
-// 		});
-// });
+app.get( '/blog-posts', ( req, res, next ) => {
+	BlogList.get()
+		.then( blogs => {
+			return res.status( 200 ).json( blogs );
+		})
+		.catch( error => {
+			res.statusMessage = "Something went wrong with the DB. Try again later.";
+			return res.status( 500 ).json({
+				status : 500,
+				message : "Something went wrong with the DB. Try again later."
+			})
+		});
+});
 
-// let server;
+app.post('/blog-posts', jsonParser, (req, res, next) => {
+    let title = req.body.title;
+    let content = req.body.content;
+    let author = req.body.author;
+    let publishDate = req.body.publishDate;
 
-// function runServer(port, databaseUrl){
-//     return new Promise( (resolve, reject ) => {
-//     mongoose.connect(databaseUrl, response => {
-//     if ( response ){
-//     return reject(response);
-//     }
-//     else{
-//     server = app.listen(port, () => {
-//     console.log( "App is running on port " + port );
-//     resolve();
-//     })
-//     .on( 'error', err => {
-//     mongoose.disconnect();
-//     return reject(err);
-//     })
-//     }
-//     });
-//     });
-// }
+    if(!title | !content | !author | !publishDate){
+        res.statusMessage = "Missing field in body";
+        return res.status(406).json({
+            message: "Missing field in body",
+            status: 406
+        });
+    }
+
+     let newBlog = {
+        id: uuid(),
+        title: title,
+        content: content,
+        author: author,
+        publishDate: publishDate
+     };
+     BlogList.post(newBlog)
+        .then(blog => {
+            res.status(201).json(blog);
+        })
+        .catch(err => {
+            res.statusMessage = "Something went wrong with the data base";
+            return res.status(500).json({
+                "error" : "Something went wrong with the data base",
+                "status" : 500
+            });
+        });
+});
+
+app.put('/blog-posts/:id', jsonParser, (req, res, next) => {
+    let filterID = req.params.id;
+    if(!filterID || !req.body){
+        res.statusMessage = "Missing field id";
+        return res.status(406).json({
+           "error" : "Missing id",
+           "status" : 406
+       });
+    }
+    BlogList.put({ id : filterID }, req.body)
+       .then(blog => {
+           res.status(201).json(blog);
+       })
+       .catch(err => {
+           res.statusMessage = "Missing field in body";
+           return res.status(500).json({
+               "error" : "Something went wrong with the data base",
+               "status" : 500
+           });
+       });
+});
+
+app.delete('/blog-posts/:id', (req, res) => {
+    let filterID = req.params.id;
+    console.log(filterID)
+    if(!filterID){
+        res.statusMessage = "Missing field id";
+        return res.status(406).json({
+           "error" : "Missing id",
+           "status" : 406
+       });
+    }
+    BlogList.delete({ id : filterID })
+       .then(blog => {
+           res.status(201).json(blog);
+       })
+       .catch(err => {
+           res.statusMessage = "Something went wrong with the data base";
+           return res.status(500).json({
+               "error" : "Something went wrong with the data base",
+               "status" : 500
+           });
+       });
+});
+
+
+let server;
+
+function runServer(port, databaseUrl){
+    return new Promise( (resolve, reject ) => {
+    mongoose.connect(databaseUrl, response => {
+    if ( response ){
+    return reject(response);
+    }
+    else{
+    server = app.listen(port, () => {
+    console.log( "App is running on port " + port );
+    resolve();
+    })
+    .on( 'error', err => {
+    mongoose.disconnect();
+    return reject(err);
+    })
+    }
+    });
+    });
+}
    
-// function closeServer(){
-//     return mongoose.disconnect()
-//             .then(() => {
-// return new Promise((resolve, reject) => {
-// console.log('Closing the server');
-// server.close( err => {
-// if (err){
-//     return reject(err);
-//     }
-//     else{
-//     resolve();
-//     }
-//     });
-//     });
-//     });
-//    }
+function closeServer(){
+    return mongoose.disconnect()
+            .then(() => {
+return new Promise((resolve, reject) => {
+console.log('Closing the server');
+server.close( err => {
+if (err){
+    return reject(err);
+    }
+    else{
+    resolve();
+    }
+    });
+    });
+    });
+   }
    
-// runServer( PORT, DATABASE_URL )
-//     .catch( err => {
-//     console.log( err );
-// });
+runServer( PORT, DATABASE_URL )
+    .catch( err => {
+    console.log( err );
+});
    
-// module.exports = { app, runServer, closeServer };
+module.exports = { app, runServer, closeServer };
