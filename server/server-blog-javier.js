@@ -20,7 +20,9 @@ app.use(function(req, res, next) {
 });
 
 app.get( '/blog-posts', ( req, res, next ) => {
-	BlogList.get()
+    console.log("Enter get")
+    BlogList.get()
+    console.log(BlogList.get())
 		.then( blogs => {
 			return res.status( 200 ).json( blogs );
 		})
